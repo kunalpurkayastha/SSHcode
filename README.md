@@ -2,8 +2,7 @@
 
 A VS Code–style workspace for the hosts in your `~/.ssh/config`, in the browser:
 file explorer, the Monaco editor (the editor inside VS Code) and real terminals,
-drawn as macOS-style glass. It is a sibling of `sshweb` and works the same way
-underneath.
+drawn as macOS-style glass.
 
 ```
 sshcode                     start the server if needed and open the browser
@@ -240,8 +239,7 @@ WebGL, and nothing rebuilt per keystroke.
 - `server/app.py`: `ThreadingHTTPServer` with the JSON API, static files and
   the terminal WebSocket (`server/websocket.py`, a minimal RFC 6455).
 - `server/remote.py`: one ssh ControlMaster per host
-  (`$XDG_RUNTIME_DIR/sshcode/cm-*`). File access is SFTP (`server/sftp.py`,
-  from sshweb). Search, file lists, recursive delete, copy and tar are small
+  (`$XDG_RUNTIME_DIR/sshcode/cm-*`). File access is SFTP (`server/sftp.py`). Search, file lists, recursive delete, copy and tar are small
   POSIX `sh` scripts fed on stdin, so the remote login shell never parses them.
 - `server/askpass.py`: answers ssh's prompts from what the dialog sent.
 - `server/terminals.py`: `ssh -tt host` on a local pty, ring buffer for
