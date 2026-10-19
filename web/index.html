@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>sshcode</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preload" href="/vendor/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/vendor/xterm/xterm.css">
+<link rel="stylesheet" href="/css/app.css">
+<script src="/js/boot.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<!-- UMD builds first, so they register as globals before Monaco's AMD loader defines `define`. -->
+<script src="/vendor/xterm/xterm.js"></script>
+<script src="/vendor/xterm/addon-fit.js"></script>
+<script src="/vendor/xterm/addon-web-links.js"></script>
+<script src="/vendor/xterm/addon-unicode11.js"></script>
+<script src="/vendor/xterm/addon-webgl.js"></script>
+<script src="/vendor/monaco/vs/loader.js"></script>
+<script type="module" src="/js/main.js"></script>
+</body>
+</html>

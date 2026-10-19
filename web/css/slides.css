@@ -1,0 +1,109 @@
+/* The slide viewer for .pptx files, loaded the first time a deck opens.
+   Carlito and Caladea have the metrics of Calibri and Cambria (the Office
+   defaults), so text wraps where it did in PowerPoint. */
+
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 400; font-display: block; src: local("Carlito"), url(/vendor/fonts/carlito-greek-400-normal.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 400; font-display: block; src: local("Carlito"), url(/vendor/fonts/carlito-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 400; font-display: block; src: local("Carlito"), url(/vendor/fonts/carlito-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 700; font-display: block; src: local("Carlito Bold"), url(/vendor/fonts/carlito-greek-700-normal.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 700; font-display: block; src: local("Carlito Bold"), url(/vendor/fonts/carlito-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Carlito"; font-style: normal; font-weight: 700; font-display: block; src: local("Carlito Bold"), url(/vendor/fonts/carlito-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 400; font-display: block; src: local("Carlito Italic"), url(/vendor/fonts/carlito-greek-400-italic.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 400; font-display: block; src: local("Carlito Italic"), url(/vendor/fonts/carlito-latin-ext-400-italic.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 400; font-display: block; src: local("Carlito Italic"), url(/vendor/fonts/carlito-latin-400-italic.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 700; font-display: block; src: local("Carlito Bold Italic"), url(/vendor/fonts/carlito-greek-700-italic.woff2) format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 700; font-display: block; src: local("Carlito Bold Italic"), url(/vendor/fonts/carlito-latin-ext-700-italic.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Carlito"; font-style: italic; font-weight: 700; font-display: block; src: local("Carlito Bold Italic"), url(/vendor/fonts/carlito-latin-700-italic.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Caladea"; font-style: normal; font-weight: 400; font-display: block; src: local("Caladea"), url(/vendor/fonts/caladea-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Caladea"; font-style: normal; font-weight: 400; font-display: block; src: local("Caladea"), url(/vendor/fonts/caladea-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Caladea"; font-style: normal; font-weight: 700; font-display: block; src: local("Caladea Bold"), url(/vendor/fonts/caladea-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Caladea"; font-style: normal; font-weight: 700; font-display: block; src: local("Caladea Bold"), url(/vendor/fonts/caladea-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Caladea"; font-style: italic; font-weight: 400; font-display: block; src: local("Caladea Italic"), url(/vendor/fonts/caladea-latin-ext-400-italic.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Caladea"; font-style: italic; font-weight: 400; font-display: block; src: local("Caladea Italic"), url(/vendor/fonts/caladea-latin-400-italic.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Caladea"; font-style: italic; font-weight: 700; font-display: block; src: local("Caladea Bold Italic"), url(/vendor/fonts/caladea-latin-ext-700-italic.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Caladea"; font-style: italic; font-weight: 700; font-display: block; src: local("Caladea Bold Italic"), url(/vendor/fonts/caladea-latin-700-italic.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ---------- a slide, drawn at 96 dpi and scaled by its holder ---------- */
+.pptx-slide {
+  position: relative; overflow: hidden; background: #fff; color: #000;
+  text-align: left; letter-spacing: normal; line-height: normal; font-size: 18px; font-weight: 400; font-style: normal;
+  -webkit-font-smoothing: auto; user-select: text; -webkit-user-select: text; cursor: auto;
+  transform-origin: 0 0;
+}
+.pptx-slide .p-sh { position: absolute; }
+.pptx-slide svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.pptx-slide svg.p-chart { overflow: hidden; }
+.pptx-slide .p-tx { position: absolute; display: flex; flex-direction: column; }
+.pptx-slide .p-tb { white-space: pre-wrap; overflow-wrap: break-word; flex: none; }
+.pptx-slide p { margin: 0; }
+.pptx-slide a { color: inherit; cursor: pointer; }
+.pptx-slide .ptbl { border-collapse: collapse; table-layout: fixed; }
+.pptx-slide .ptbl td { overflow-wrap: break-word; }
+.pptx-slide .p-missing {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: repeating-linear-gradient(135deg, rgba(128, 128, 128, .08) 0 12px, rgba(128, 128, 128, .16) 12px 24px);
+  color: rgba(90, 90, 90, .75); font: 600 14px var(--font); letter-spacing: .04em;
+}
+.pptx-slide .p-dgm-text { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 12px; font: 16px var(--font); color: #333; }
+.pptx-slide .p-dgm-text p { padding: 6px 10px; border-radius: 6px; background: rgba(68, 114, 196, .12); }
+.pptx-play {
+  position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(0, 0, 0, .55); color: #fff; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .35); transition: transform .15s var(--ease), background .15s;
+}
+.pptx-play svg { position: static; width: 30px; height: 30px; margin-left: 4px; }
+.pptx-play:hover { transform: scale(1.06); background: rgba(0, 0, 0, .7); }
+.pptx-play.off { opacity: .45; cursor: not-allowed; }
+.pptx-media { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; object-fit: contain; }
+
+/* ---------- the viewer: thumbnails, the slide column, the toolbar ---------- */
+.sv { position: absolute; inset: 0; display: flex; background: color-mix(in srgb, var(--pane) 93%, var(--text)); }
+.sv-nav { width: 178px; flex: none; overflow-y: auto; padding: 12px 8px 24px 4px; border-right: 1px solid var(--sep); background: var(--pane); }
+.sv.no-nav .sv-nav { display: none; }
+.sv-section { padding: 10px 6px 6px 30px; font-size: 11px; font-weight: 600; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-thumb { display: flex; align-items: flex-start; gap: 6px; width: 100%; padding: 4px 4px 4px 0; margin-bottom: 4px; border-radius: 8px; }
+.sv-thumb .n { width: 22px; flex: none; padding-top: 1px; text-align: right; font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.sv-frame { position: relative; display: block; width: 132px; height: calc(132px * var(--ratio)); overflow: hidden; border-radius: 3px; background: #fff; box-shadow: 0 0 0 1px var(--sep-2); pointer-events: none; contain: strict; }
+.sv-frame .pptx-slide { transform: scale(var(--tk)); user-select: none; -webkit-user-select: none; }
+.sv-thumb:hover .sv-frame { box-shadow: 0 0 0 1px var(--sep-2), 0 3px 10px -2px rgba(0, 0, 0, .25); }
+.sv-thumb.on .sv-frame { box-shadow: 0 0 0 2.5px var(--accent); }
+.sv-thumb.on .n { color: var(--accent-text); font-weight: 600; }
+.sv .hidden-slide .sv-frame, .sv-item.hidden-slide .sv-slide { opacity: .45; }
+.sv-main { position: relative; flex: 1; min-width: 0; overflow: auto; outline: none; }
+.sv-list { display: flex; flex-direction: column; align-items: center; gap: 24px; min-width: max-content; padding: 56px 28px 48px; }
+.sv-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.sv-slide { position: relative; width: var(--sw); height: var(--sh); overflow: hidden; background: #fff; contain: strict; box-shadow: 0 1px 2px rgba(0, 0, 0, .16), 0 10px 28px -12px rgba(0, 0, 0, .4); }
+.sv-slide .pptx-slide { transform: scale(var(--k)); }
+.sv-error { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; font: 13px var(--font); color: #8a1c1c; background: #fff5f5; }
+.sv-notes { width: var(--sw); padding: 11px 15px; border-radius: 10px; background: var(--pane); box-shadow: inset 0 0 0 1px var(--sep-2); color: var(--text); font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word; user-select: text; -webkit-user-select: text; }
+.sv-notes p { margin: 0 0 3px; }
+.sv-notes .lv1 { padding-left: 16px; } .sv-notes .lv2 { padding-left: 32px; } .sv-notes .lv3, .sv-notes .lv4 { padding-left: 48px; }
+.sv-bar {
+  position: absolute; top: 10px; right: 14px; z-index: 2; display: flex; align-items: center; gap: 1px; padding: 3px;
+  border-radius: 11px; background: var(--pop); outline: 1px solid var(--edge); outline-offset: -1px; box-shadow: var(--shadow-pane);
+}
+.sv-count { min-width: 66px; padding: 0 4px; text-align: center; font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sv-sep { width: 1px; height: 16px; margin: 0 4px; background: var(--sep-2); flex: none; }
+.sv-zoom { min-width: 44px; height: 24px; border-radius: 7px; font-size: 11.5px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.sv-zoom:hover { background: var(--fill); color: var(--text); }
+.sv-play { display: flex; align-items: center; gap: 4px; height: 24px; margin-left: 4px; padding: 0 10px 0 7px; border-radius: 7px; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 600; }
+.sv-play:hover { filter: brightness(1.08); }
+.sv-play .i { width: 13px; height: 13px; }
+.sv-state { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; }
+@media (max-width: 900px) { .sv-nav { display: none; } }
+
+/* ---------- presenting ---------- */
+.sv-show { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #000; outline: none; cursor: none; }
+.sv-show.awake { cursor: default; }
+.sv-stage { position: relative; overflow: hidden; }
+.sv-stage .pptx-slide { transform: scale(var(--k)); user-select: none; -webkit-user-select: none; }
+.sv-ctl {
+  position: absolute; left: 50%; bottom: 22px; display: flex; align-items: center; gap: 2px; padding: 4px;
+  border-radius: 12px; background: rgba(28, 28, 30, .86); color: #fff; transform: translateX(-50%);
+  opacity: 0; transition: opacity .25s; box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+}
+.sv-show.awake .sv-ctl { opacity: 1; }
+.sv-ctl .ib { color: rgba(255, 255, 255, .85); }
+.sv-ctl .ib:hover { background: rgba(255, 255, 255, .14); color: #fff; }
+.sv-ctl .sv-sep { background: rgba(255, 255, 255, .2); }
+.sv-pos { min-width: 70px; text-align: center; font: 12px var(--font); color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; }

@@ -1,0 +1,211 @@
+#!/usr/bin/python3
+"""sshcode — a VS Code-style editor for the hosts in your ~/.ssh/config:
+file explorer, code editor and terminals in the browser.
+
+  sshcode                  start the server if needed and open the browser
+  sshcode HOST [PATH]      open a workspace on HOST (optionally in PATH)
+  sshcode start|stop|restart|status|logs|serve
+"""
+import json
+import os
+import secrets
+import shutil
+import signal
+import subprocess
+import sys
+import time
+import urllib.parse
+import urllib.request
+import webbrowser
+
+APP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(APP_DIR, "server"))
+from version import VERSION  # noqa: E402
+
+STATE = os.environ.get("SSHCODE_STATE") or os.path.join(
+    os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state"), "sshcode")
+PORT = int(os.environ.get("SSHCODE_PORT") or 8823)
+TOKEN_FILE = os.path.join(STATE, "token")
+SERVER_FILE = os.path.join(STATE, "server.json")
+LOG = os.path.join(STATE, "server.log")
+COMMANDS = ("open", "start", "stop", "restart", "status", "logs", "serve", "help")
+
+
+def token():
+    """One token per install (0600), so bookmarks survive restarts."""
+    os.makedirs(STATE, mode=0o700, exist_ok=True)
+    try:
+        with open(TOKEN_FILE) as f:
+            t = f.read().strip()
+        if t:
+            return t
+    except FileNotFoundError:
+        pass
+    t = secrets.token_urlsafe(24)
+    fd = os.open(TOKEN_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        f.write(t)
+    return t
+
+
+def health(port):
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/health", timeout=1.5) as r:
+            return json.load(r)
+    except Exception:
+        return None
+
+
+def running():
+    """The live server started from this state dir, if any (checked by pid,
+    so a different app on the port is never mistaken for it)."""
+    try:
+        with open(SERVER_FILE) as f:
+            st = json.load(f)
+    except (OSError, ValueError):
+        return None
+    h = health(st.get("port"))
+    if h and h.get("app") == "sshcode" and h.get("pid") == st.get("pid"):
+        return dict(st, version=h.get("version") or 1)
+    return None
+
+
+def stale_note(st):
+    """A server started before an update keeps running the old code."""
+    if st.get("version", VERSION) < VERSION:
+        print("sshcode was updated: run `sshcode restart` to finish (open terminals will close).")
+
+
+def start():
+    st = running()
+    if st:
+        return st
+    os.makedirs(STATE, mode=0o700, exist_ok=True)
+    if os.path.exists(LOG) and os.path.getsize(LOG) > 5_000_000:
+        os.replace(LOG, LOG + ".1")
+    with open(LOG, "ab") as log:
+        subprocess.Popen([sys.executable, os.path.realpath(__file__), "serve"],
+                         stdin=subprocess.DEVNULL, stdout=log, stderr=log,
+                         start_new_session=True, cwd=os.path.expanduser("~"))
+    for _ in range(60):
+        time.sleep(0.15)
+        st = running()
+        if st:
+            return st
+    print(f"sshcode didn't start. Last lines of {LOG}:", file=sys.stderr)
+    try:
+        with open(LOG, errors="replace") as f:
+            print("".join(f.readlines()[-20:]), file=sys.stderr)
+    except OSError:
+        pass
+    sys.exit(1)
+
+
+def stop():
+    st = running()
+    if not st:
+        print("sshcode is not running.")
+        return
+    os.kill(st["pid"], signal.SIGTERM)
+    for _ in range(50):
+        time.sleep(0.1)
+        try:
+            os.kill(st["pid"], 0)
+        except ProcessLookupError:
+            break
+    else:
+        os.kill(st["pid"], signal.SIGKILL)
+    print("sshcode stopped.")
+
+
+def serve():
+    import app
+
+    def ready(port):
+        fd = os.open(SERVER_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            json.dump({"pid": os.getpid(), "port": port}, f)
+        print(f"sshcode listening on http://127.0.0.1:{port}/", flush=True)
+
+    try:
+        app.serve(PORT, token(), ready)
+    finally:
+        try:
+            with open(SERVER_FILE) as f:
+                if json.load(f).get("pid") == os.getpid():
+                    os.unlink(SERVER_FILE)
+        except (OSError, ValueError):
+            pass
+
+
+def workspace_url(port, host=None, path=None):
+    url = f"http://127.0.0.1:{port}/?t={token()}"
+    if host:
+        frag = {"host": host}
+        if path:
+            # The local shell expanded ~ to *this* machine's home; the remote
+            # home may differ, so hand the page a ~ it can resolve itself.
+            home = os.path.expanduser("~")
+            if path == home or path.startswith(home + "/"):
+                path = "~" + path[len(home):]
+            frag["root"] = path
+        url += "#" + urllib.parse.urlencode(frag, quote_via=urllib.parse.quote)
+    return url
+
+
+def open_browser(url):
+    browser = os.environ.get("SSHCODE_BROWSER")
+    if browser:
+        subprocess.Popen([browser, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    elif shutil.which("xdg-open"):
+        subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    else:
+        webbrowser.open(url)
+
+
+def main():
+    args = sys.argv[1:]
+    cmd = args[0] if args and args[0] in COMMANDS else "open"
+    if args and args[0] in COMMANDS:
+        args = args[1:]
+    if args and args[0] in ("-h", "--help"):
+        cmd = "help"
+
+    if cmd == "help":
+        print(__doc__.strip())
+        print(f"\nEnvironment: SSHCODE_PORT (default 8823), SSHCODE_BROWSER, "
+              f"SSHCODE_SSH_CONFIG\nState and log: {STATE}")
+    elif cmd == "open":
+        host = args[0] if args else None
+        path = args[1] if len(args) > 1 else None
+        st = start()
+        url = workspace_url(st["port"], host, path)
+        print(f"sshcode is running at http://127.0.0.1:{st['port']}/")
+        stale_note(st)
+        open_browser(url)
+    elif cmd == "start":
+        st = start()
+        print(f"sshcode is running at http://127.0.0.1:{st['port']}/  (open it with: sshcode)")
+        stale_note(st)
+    elif cmd == "stop":
+        stop()
+    elif cmd == "restart":
+        stop()
+        st = start()
+        print(f"sshcode restarted at http://127.0.0.1:{st['port']}/")
+    elif cmd == "status":
+        st = running()
+        print(f"sshcode is running at http://127.0.0.1:{st['port']}/ (pid {st['pid']})"
+              if st else "sshcode is not running.")
+        if st:
+            stale_note(st)
+    elif cmd == "logs":
+        os.execvp("tail", ["tail", "-n", "100", "-f", LOG])
+    elif cmd == "serve":
+        serve()
+
+
+if __name__ == "__main__":
+    main()

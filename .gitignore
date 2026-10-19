@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+
+# fetched by scripts/vendor.sh (install.sh runs it)
+/web/vendor/
+/web/vendor.new/
+/web/vendor.old/
